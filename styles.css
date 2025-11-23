@@ -1,7 +1,7 @@
 * { box-sizing: border-box; }
 :root { --fg: #111; --muted:#666; --bg:#fff; --card:#f6f7f9; --acc:#0b5fff; --border:#e8e8e8; }
 :root.dark { --fg:#eaeaea; --muted:#a9b0bb; --bg:#0e1116; --card:#161b22; --acc:#5b8cff; --border:#2a2f37; }
-html, body { margin:0; padding:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color: var(--fg); background: var(--bg); }
+html, body { margin:0; padding:0; font-family: -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color: var(--fg); background: var(--bg); }
 header { padding: 16px 20px; border-bottom: 1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:12px; }
 header h1 { margin:0 0 2px; font-size: 22px; }
 header p { margin:0; color: var(--muted); font-size:14px; }
@@ -22,7 +22,7 @@ section.controls { padding: 12px 16px; border-bottom:1px solid var(--border); }
 details { margin-top:10px; }
 .settings-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; padding-top:8px; }
 .setting { background: var(--card); padding:12px; border-radius:12px; }
-.setting small { display:block; color:var(--muted); margin-top:6px; }
+.setting small { display:block; color: var(--muted); margin-top:6px; }
 
 main#content { padding: 16px; }
 
@@ -45,7 +45,7 @@ main#content { padding: 16px; }
 .month-card h3 { margin:0 0 8px; font-size:16px; }
 
 .badge { display:inline-block; padding:2px 6px; border-radius:999px; background:#eef2ff; color:#263fa2; font-size:12px; margin-left:6px; }
-.legend { display:flex; gap:10px; flex-wrap:wrap; margin:12px 16px; color:var(--muted); }
+.legend { display:flex; gap:10px; flex-wrap:wrap; margin:12px 16px; color: var(--muted); }
 .legend span::before { content:""; display:inline-block; width:10px; height:10px; margin-right:6px; background:#dfe7ff; border-radius:2px; vertical-align:middle; }
 .legend .islamic::before { background:#fdecc8; }
 .legend .punjabi::before { background:#e4f7e7; }
@@ -55,18 +55,15 @@ main#content { padding: 16px; }
 footer { border-top:1px solid var(--border); padding:8px 16px 20px; }
 .muted { color: var(--muted); }
 
-/* Dialog */
 dialog { border:1px solid var(--border); border-radius:12px; padding:16px; background:var(--bg); color:var(--fg); }
 dialog form { display:grid; gap:10px; width:min(420px, 90vw); }
 dialog input, dialog textarea { width:100%; padding:8px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--fg); }
 .dialog-actions { display:flex; gap:8px; justify-content:flex-end; }
 
-/* Urdu/Punjabi Shahmukhi font direction */
 .dual { display:grid; gap:2px; }
 .ur { direction: rtl; font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif; font-size: 14px; }
 .en { font-size: 14px; }
 
-/* Dark mode auto */
 @media (prefers-color-scheme: dark) {
   :root { --fg:#eaeaea; --muted:#a9b0bb; --bg:#0e1116; --card:#161b22; --acc:#5b8cff; --border:#2a2f37; }
 } 
