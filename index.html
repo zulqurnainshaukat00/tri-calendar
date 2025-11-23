@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>3‑in‑1 Calendar — English · Islamic · Punjabi</title>
+
+  <meta name="theme-color" content="#0b5fff">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png" sizes="180x180">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tri Calendar">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="title">
+      <h1>3‑in‑1 Calendar</h1>
+      <p>English · Islamic (Hijri, tabular) · Punjabi (fixed solar months) · Farming Guide (Sahiwal)</p>
+    </div>
+    <div class="actions">
+      <select id="themeMode" title="Theme">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+      <button id="installBtn" class="ghost" title="Install">Install</button>
+    </div>
+  </header>
+
+  <section class="controls">
+    <div class="row">
+      <label for="datePicker">Base date:</label>
+      <input type="date" id="datePicker" />
+      <button id="todayBtn">Today</button>
+
+      <label class="view-label">View:</label>
+      <div class="segmented">
+        <button data-view="day" class="active">Day</button>
+        <button data-view="week">Week</button>
+        <button data-view="month">Month</button>
+        <button data-view="year">Year</button>
+      </div>
+
+      <button id="addReminderBtn">＋ Reminder</button>
+      <button id="exportBtn" class="ghost">Export</button>
+      <label class="importBtn ghost">
+        Import <input type="file" id="importFile" accept="application/json" hidden>
+      </label>
+    </div>
+
+    <details>
+      <summary>Settings</summary>
+      <div class="settings-grid">
+        <div class="setting">
+          <label for="hijriOffset">Hijri correction (± days)</label>
+          <input type="number" id="hijriOffset" min="-2" max="2" step="1" value="0" />
+          <small>Adjust if local moon-sighting differs.</small>
+        </div>
+
+        <div class="setting">
+          <label for="punjabiSystem">Punjabi year style</label>
+          <select id="punjabiSystem">
+            <option value="vs" selected>Vikram Samvat</option>
+            <option value="ns">Nanakshahi</option>
+          </select>
+          <small>Months are fixed solar (Chet ≈ 14 Mar).</small>
+        </div>
+
+        <div class="setting">
+          <label>Holiday packs</label>
+          <label class="switch"><input type="checkbox" id="pkHolidays" checked> <span>Pakistan</span></label>
+          <label class="switch"><input type="checkbox" id="deHolidays" checked> <span>Germany (Bavaria)</span></label>
+        </div>
+
+        <div class="setting">
+          <label>Weather & Spray Alerts (Sahiwal)</label>
+          <button id="refreshWeather" class="ghost">Refresh</button>
+          <small>Uses Open‑Meteo (no key). Works when online; cached for offline.</small>
+          <div id="weatherBox" class="muted small"></div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <main id="content"></main>
+
+  <footer>
+    <div class="legend">
+      <span>English</span><span class="islamic">Islamic</span><span class="punjabi">Punjabi</span><span class="custom">My reminder</span><span class="agri">Farming guide</span>
+    </div>
+    <p class="muted small">Islamic uses tabular Hijri (civil). Punjabi months use fixed solar boundaries. Local dates can differ by ±1 day.</p>
+  </footer>
+
+  <dialog id="reminderDialog">
+    <form method="dialog" id="reminderForm">
+      <h3>Add / Edit Reminder</h3>
+      <p id="reminderDate"></p>
+      <label>Title
+        <input type="text" id="remTitle" required maxlength="80" />
+      </label>
+      <label>Notes
+        <textarea id="remNotes" rows="3" maxlength="500"></textarea>
+      </label>
+      <div class="dialog-actions">
+        <button value="cancel" class="ghost">Cancel</button>
+        <button id="saveReminder" value="default">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+  <script>
+    // PWA install
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    installBtn.style.display = 'none';
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); deferredPrompt = e; installBtn.style.display='inline-block';
+    });
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice; deferredPrompt = null; installBtn.style.display='none';
+    });
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js?v=7', { scope: './' })
+          .then(()=>navigator.serviceWorker.ready.then(r=>r.active && r.active.postMessage({type:'PING'})))
+          .catch(console.error);
+      });
+    }
+  </script>
+</body>
+</html>
