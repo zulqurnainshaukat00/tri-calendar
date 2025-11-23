@@ -1,4 +1,4 @@
-const VERSION='tri-cal-v7';
+const VERSION='tri-cal-v8';
 const ASSETS=[
   './',
   './index.html',

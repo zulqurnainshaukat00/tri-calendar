@@ -34,7 +34,8 @@ const ISLAMIC_MONTHS=["Muharram","Safar","Rabiʿ I","Rabiʿ II","Jumada I","Juma
 function hijriOf(d, off){const base=new Date(d);if(off)base.setDate(base.getDate()+Number(off));const jd=gregorianToJD(base.getFullYear(),base.getMonth()+1,base.getDate());const ih=jdToIslamic(jd);ih.name=ISLAMIC_MONTHS[ih.month-1];return ih;}
 
 /* ---------- Punjabi fixed solar months ---------- */
-const PUNJABI_MONTHS=["Chet","Vaisakh","Jeth","Harh","Sawan","Bhadon","Assu","Katak","Maghar","Poh","Magh","Phagun"];
+const PUNJABI_MONTHS_EN=["Chet","Vaisakh","Jeth","Harh","Sawan","Bhadon","Assu","Kattak","Maghar","Poh","Magh","Phagan"];
+const PUNJABI_MONTHS_UR=["چیت","ویساکھ","جیتھ","ہاڑ","ساون","بھادوں","اسّو","کتّک","مغہر","پوہ","ماگھ","پھگن"];
 function punjabiInfoFromGregorian(gd){
   const y=gd.getFullYear();const b=[];
   function add(year,m,d,idx){b.push({date:new Date(year,m-1,d),idx});}
@@ -45,18 +46,15 @@ function punjabiInfoFromGregorian(gd){
   const dayNo=Math.floor((gd-cur.date)/(24*3600*1000))+1;const daysInThis=Math.floor((next.date-cur.date)/(24*3600*1000));
   const sys=document.querySelector('#punjabiSystem')?.value||'vs';const march14=new Date(gd.getFullYear(),2,14);
   let yearVal=(sys==='vs')?((gd>=march14)?gd.getFullYear()+57:gd.getFullYear()+56):((gd>=march14)?gd.getFullYear()-1468:gd.getFullYear()-1469);
-  return{idx:cur.idx,monthName:PUNJABI_MONTHS[cur.idx],day:dayNo,year:yearVal,daysInMonth:daysInThis};
+  return{idx:cur.idx,monthNameEn:PUNJABI_MONTHS_EN[cur.idx],monthNameUr:PUNJABI_MONTHS_UR[cur.idx],day:dayNo,year:yearVal,daysInMonth:daysInThis};
 }
 
 /* ---------- Holiday packs ---------- */
-function easterDate(year){ // Anonymous Gregorian algorithm
-  const f=year=>{let a=year%19,b=Math.floor(year/100),c=year%100,d=Math.floor(b/4),e=b%4,g=Math.floor((8*b+13)/25),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+19*l)/433),n=Math.floor((h+l-7*m+90)/25),p=(h+l-7*m+33*n+19)%32;return{month:n,day:p};};
-  const r=f(year);return new Date(year,r.month-1,r.day);
-}
+function easterDate(year){const f=year=>{let a=year%19,b=Math.floor(year/100),c=year%100,d=Math.floor(b/4),e=b%4,g=Math.floor((8*b+13)/25),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+19*l)/433),n=Math.floor((h+l-7*m+90)/25),p=(h+l-7*m+33*n+19)%32;return{month:n,day:p};};const r=f(year);return new Date(year,r.month-1,r.day);}
 function addHoliday(list, date, name, kind="english"){list.push({date:ymd(date), name, kind});}
-function germanHolidays(year){ // National + Bavaria
+function germanHolidays(year){
   const L=[];
-  addHoliday(L,new Date(year,0,1),"Neujahr"); // Jan 1
+  addHoliday(L,new Date(year,0,1),"Neujahr");
   addHoliday(L,new Date(year,4,1),"Tag der Arbeit");
   addHoliday(L,new Date(year,9,3),"Tag der Deutschen Einheit");
   addHoliday(L,new Date(year,11,25),"Weihnachtstag");
@@ -66,8 +64,7 @@ function germanHolidays(year){ // National + Bavaria
   addHoliday(L,addDays(e,1),"Ostermontag");
   addHoliday(L,addDays(e,39),"Christi Himmelfahrt");
   addHoliday(L,addDays(e,50),"Pfingstmontag");
-  addHoliday(L,addDays(e,60),"Fronleichnam"); // Bavaria
-  // Bavaria specific
+  addHoliday(L,addDays(e,60),"Fronleichnam");
   addHoliday(L,new Date(year,7,15),"Mariä Himmelfahrt");
   addHoliday(L,new Date(year,10,1),"Allerheiligen");
   return L;
@@ -80,7 +77,7 @@ function pakistanHolidays(year){
   addHoliday(L,new Date(year,7,14),"Independence Day");
   addHoliday(L,new Date(year,8,6),"Defence Day");
   addHoliday(L,new Date(year,10,9),"Iqbal Day");
-  addHoliday(L,new Date(year,11,25),"Quaid‑e‑Azam Day / Christmas");
+  addHoliday(L,new Date(year,11,25),"Quaid-e-Azam Day / Christmas");
   return L;
 }
 
@@ -88,14 +85,14 @@ function pakistanHolidays(year){
 function islamicEvents(d,off){
   const h=hijriOf(d,off);const E=[];
   if(h.month===9 && h.day===1)E.push({name:"Ramadan begins",kind:"islamic"});
-  if(h.month===9 && [21,23,25,27,29].includes(h.day))E.push({name:"Laylat al‑Qadr (odd night)",kind:"islamic"});
-  if(h.month===10 && [1,2,3].includes(h.day))E.push({name:"Eid al‑Fitr",kind:"islamic"});
-  if(h.month===12 && [10,11,12,13].includes(h.day))E.push({name:"Eid al‑Adha",kind:"islamic"});
+  if(h.month===9 && [21,23,25,27,29].includes(h.day))E.push({name:"Laylat al-Qadr (odd night)",kind:"islamic"});
+  if(h.month===10 && [1,2,3].includes(h.day))E.push({name:"Eid al-Fitr",kind:"islamic"});
+  if(h.month===12 && [10,11,12,13].includes(h.day))E.push({name:"Eid al-Adha",kind:"islamic"});
   if(h.month===1 && h.day===1)E.push({name:"Islamic New Year",kind:"islamic"});
   if(h.month===1 && h.day===10)E.push({name:"ʿAshura (10 Muharram)",kind:"islamic"});
   if(h.month===3 && h.day===12)E.push({name:"Mawlid (12 Rabiʿ I)",kind:"islamic"});
-  if(h.month===7 && h.day===27)E.push({name:"Shab‑e‑Miʿraj",kind:"islamic"});
-  if(h.month===8 && h.day===15)E.push({name:"Shab‑e‑Barat",kind:"islamic"});
+  if(h.month===7 && h.day===27)E.push({name:"Shab-e-Miʿraj",kind:"islamic"});
+  if(h.month===8 && h.day===15)E.push({name:"Shab-e-Barat",kind:"islamic"});
   return E;
 }
 function punjabiDesiEvents(g){
@@ -107,7 +104,7 @@ function punjabiDesiEvents(g){
 }
 
 /* ---------- Reminders (localStorage) ---------- */
-const LS_KEY="tri_calendar_reminders_v2";
+const LS_KEY="tri_calendar_reminders_v3";
 function loadReminders(){try{return JSON.parse(localStorage.getItem(LS_KEY))||{};}catch{return{};}}
 function saveReminders(obj){localStorage.setItem(LS_KEY,JSON.stringify(obj));}
 function addReminder(dateStr,title,notes){const db=loadReminders();db[dateStr]=db[dateStr]||[];db[dateStr].push({title,notes,created:Date.now()});saveReminders(db);}
@@ -131,7 +128,7 @@ importFile.addEventListener('change',(e)=>{
 /* ---------- Weather & Spray Alerts (Sahiwal) ---------- */
 const weatherBox=document.getElementById('weatherBox');
 const refreshWeatherBtn=document.getElementById('refreshWeather');
-const WEATHER_CACHE_KEY='tri_weather_cache_v1';
+const WEATHER_CACHE_KEY='tri_weather_cache_v2';
 async function fetchWeather(){
   const lat=30.666, lon=73.10;
   const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_gusts_10m&timezone=auto`;
@@ -147,9 +144,7 @@ async function fetchWeather(){
 }
 function analyzeSpray(json){
   try{
-    const h=json.hourly; const nowIdx=0; // simple summary based on min of today
-    // compute recommended windows: wind < 15, gust < 25, RH 40-85, temp < 32
-    let okHours=[];
+    const h=json.hourly; let okHours=[];
     for(let i=0;i<h.time.length && i<24;i++){
       const t=h.temperature_2m[i], rh=h.relative_humidity_2m[i], w=h.wind_speed_10m[i], g=h.wind_gusts_10m[i];
       if(w<15 && g<25 && rh>=40 && rh<=85 && t<32) okHours.push(i);
@@ -198,10 +193,8 @@ function allEventsForDate(d){
   const off=Number(hijriOffsetInput.value||0);
   arr=arr.concat(islamicEvents(d,off));
   arr=arr.concat(punjabiDesiEvents(d));
-  // national packs
   if(pkHolidays.checked) arr=arr.concat(pakistanHolidays(d.getFullYear()).filter(x=>x.date===ymd(d)).map(x=>({name:x.name,kind:'english'})));
   if(deHolidays.checked) arr=arr.concat(germanHolidays(d.getFullYear()).filter(x=>x.date===ymd(d)).map(x=>({name:x.name,kind:'english'})));
-  // user reminders
   const db=loadReminders(); const key=ymd(d); if(db[key]) arr=arr.concat(db[key].map(r=>({name:r.title,notes:r.notes,kind:'custom'})));
   return arr;
 }
@@ -217,12 +210,11 @@ function renderDay(d){
     <h2>${fmtGregorian(d)} ${isToday(d)?'<span class="badge">today</span>':''}</h2>
     <div>English: <strong>${short(d)} ${d.getFullYear()}</strong></div>
     <div>Islamic: <strong>${hijri.day} ${hijri.name} ${hijri.year}</strong> ${hBadge}</div>
-    <div>Panjabi: <strong>${pun.day} ${pun.monthName} ${pun.year}</strong> ${pBadge}</div>
+    <div>Punjabi (پنجابی · Desi): <strong>${pun.day} ${pun.monthNameEn} (${pun.monthNameUr}) ${pun.year}</strong> ${pBadge}</div>
   </div>
   ${farmingDetailsHTML(pun.idx)}
   <div class="card"><h3>Events & Reminders</h3>${list}</div>`;
-  // delete handlers
-  const key=ymd(d); const myRems=loadReminders()[key]||[];
+  const key=ymd(d);
   content.querySelectorAll("[data-del]").forEach((btn,ix)=>btn.addEventListener('click',()=>{deleteReminder(key,ix);render();}));
 }
 
@@ -234,7 +226,7 @@ function renderWeek(d){
     const ev=allEventsForDate(cur).map(e=>e.name).slice(0,3).join(" • ");
     html+=`<div class="card" data-goto="${ymd(cur)}">
       <div><strong>${fmtGregorian(cur)} ${isToday(cur)?'<span class="badge">today</span>':''}</strong></div>
-      <div class="muted small">I: ${hijri.day} ${hijri.name} · P: ${pun.day} ${pun.monthName}</div>
+      <div class="muted small">I: ${hijri.day} ${hijri.name} · P: ${pun.day} ${pun.monthNameEn} (${pun.monthNameUr})</div>
       <div class="small">${ev||'No events'}</div>
     </div>`;
   }
@@ -259,7 +251,7 @@ function renderMonth(d){
     html+=`<div class="cell ${isToday(cur)?'today':''}" data-goto="${ymd(cur)}" style="opacity:${inMonth?1:.45}">
       <div class="gdate"><span>${cur.getDate()}</span>${hasEvt?'<span class="badge">•</span>':''}</div>
       <div class="sub">I: ${hijri.day} ${hijri.name.slice(0,3)}</div>
-      <div class="sub">P: ${pun.day} ${pun.monthName.slice(0,3)}</div>
+      <div class="sub">P: ${pun.day} ${pun.monthNameEn.slice(0,3)} (${pun.monthNameUr})</div>
     </div>`;
     cur=addDays(cur,1);
   }
@@ -285,7 +277,7 @@ function renderYear(d){
       inner+=`<div class="cell ${isToday(cur)?'today':''}" style="opacity:${inMonth?1:.45}">
         <div class="gdate">${cur.getDate()}</div>
         <div class="sub">I: ${hijri.day} ${hijri.name.slice(0,3)}</div>
-        <div class="sub">P: ${pun.day} ${pun.monthName.slice(0,3)}</div>
+        <div class="sub">P: ${pun.day} ${pun.monthNameEn.slice(0,3)} (${pun.monthNameUr})</div>
       </div>`;
       cur=addDays(cur,1);
     }
@@ -328,9 +320,9 @@ function farmingDetailsHTML(idx){
     ["گندم: دودھیا دانہ؛ بروقت آبپاشی۔","سرسوں/آلو برداشت؛ گنے کی کاشت۔","کپاس کیلئے گہری جوت۔"]
   ];
   return `<div class="card">
-    <h3>Farming Guide — ${PUNJABI_MONTHS[idx]}</h3>
+    <h3>Farming Guide — ${PUNJABI_MONTHS_EN[idx]} (${PUNJABI_MONTHS_UR[idx]})</h3>
     <div class="dual"><div><ul>${en[idx].map(x=>`<li>${x}</li>`).join('')}</ul></div>
-    <div dir="rtl" style="font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif"><ul>${ur[idx].map(x=>`<li>${x}</li>`).join('')}</ul></div></div>
+    <div class="dual-rtl"><ul>${ur[idx].map(x=>`<li>${x}</li>`).join('')}</ul></div></div>
   </div>`;
 }
 

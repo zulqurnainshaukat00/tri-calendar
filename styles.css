@@ -38,3 +38,4 @@ details{margin-top:10px}
 .month-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
 .nav-buttons{display:flex;gap:6px}
 dialog{border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg);color:var(--fg)}
+.dual-rtl{direction:rtl;font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif}
