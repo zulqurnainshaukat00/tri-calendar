@@ -1,4 +1,3 @@
-/* Same calendar logic, with theme fix + reminders + farming data (shortened comments). */
 function pad(n){ return n<10 ? "0"+n : ""+n; }
 function cloneDate(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
 function addDays(d, delta){ const x = cloneDate(d); x.setDate(x.getDate()+delta); return x; }
@@ -11,8 +10,7 @@ function islamicToJD(y,m,d){ return d+Math.ceil(29.5*(m-1))+(y-1)*354+Math.floor
 function jdToIslamic(jd){ const y=Math.floor((30*(jd-ISLAMIC_EPOCH)+10646)/10631); let m=Math.min(12, Math.ceil((jd-islamicToJD(y,1,1)+1)/29.5)); const d=jd-islamicToJD(y,m,1)+1; return {year:y, month:m, day:d}; }
 const ISLAMIC_MONTHS=["Muharram","Safar","Rabiʿ I","Rabiʿ II","Jumada I","Jumada II","Rajab","Shaʿban","Ramadan","Shawwal","Dhu al-Qidah","Dhu al-Hijjah"];
 const PUNJABI_MONTHS=["Chet","Vaisakh","Jeth","Harh","Sawan","Bhadon","Assu","Katak","Maghar","Poh","Magh","Phagun"];
-function jdToHijriObj(d){ const jd=gregorianToJD(d.getFullYear(), d.getMonth()+1, d.getDate()); const ih=jdToIslamic(jd); ih.name=ISLAMIC_MONTHS[ih.month-1]; return ih; }
-function hijriOf(d, off){ const base=new Date(d); if(off) base.setDate(base.getDate()+Number(off)); return jdToHijriObj(base); }
+function hijriOf(d, off){ const base=new Date(d); if(off) base.setDate(base.getDate()+Number(off)); const jd=gregorianToJD(base.getFullYear(), base.getMonth()+1, base.getDate()); const ih=jdToIslamic(jd); ih.name=ISLAMIC_MONTHS[ih.month-1]; return ih; }
 function punjabiInfoFromGregorian(gd){
   const y=gd.getFullYear(); const boundaries=[];
   function pushB(year,m,d,idx){ boundaries.push({date:new Date(year,m-1,d), idx}); }
@@ -29,47 +27,23 @@ function punjabiInfoFromGregorian(gd){
 function fmtGregorian(d){ return d.toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"}); }
 function englishShort(d){ return `${d.getDate()} ${d.toLocaleString(undefined,{month:"short"})} ${d.getFullYear()}`; }
 
-const FARMING_DB=[
-  {title_en:"Chet — Mid Mar to Mid Apr",title_ur:"چیت — مارچ 14 سے اپریل 14",summary_en:"Wheat last irrigation; sugarcane ratoon; start cotton prep.",summary_ur:"گندم کی آخری آبپاشی، گنے کی کھیت صفائی و کھاد، کپاس کی تیاری شروع۔",details_en:["Wheat: final irrigation (last pani); heading begins.","Sugarcane (ratoon): cleaning + fertilizer.","Sunflower harvest; sow fodder (maize/elephant grass).","Start field prep for cotton."],details_ur:["گندم: آخری پانی، بالی نکلنا شروع۔","گنا (پرانی فصل): صفائی اور کھاد۔","سورج مکھی کی برداشت؛ چارہ (مکئی/نیلا گھاس) بوائی۔","کپاس کے لیے زمین کی تیاری شروع۔"]},
-  {title_en:"Vaisakh — Mid Apr to Mid May",title_ur:"وساکھ — اپریل 14 سے مئی 14",summary_en:"Wheat harvest starts; begin cotton sowing; first irrigation.",summary_ur:"گندم کی کٹائی شروع؛ کپاس کی بوائی اور پہلا پانی۔",details_en:["Wheat: harvesting & threshing begins.","Cotton: sowing; first irrigation; early weeding.","Maize (2nd season) possible; okra/bitter gourd planting.","Hot winds (loo): livestock care + orchard watering."],details_ur:["گندم: کٹائی اور گہائی شروع۔","کپاس: بیج بونا، پہلا پانی، ابتدائی گوڈی۔","مکئی کی دوسری فصل ممکن؛ بھنڈی/کریلا کی کاشت۔","لو چلتی ہے: مویشی اور باغات کی خصوصی دیکھ بھال۔"]},
-  {title_en:"Jeth — Mid May to Mid Jun",title_ur:"جیٹھ — مئی 15 سے جون 15",summary_en:"Wheat threshing; cotton weeding; rice nursery prep.",summary_ur:"گندم کی گہائی؛ کپاس کی گوڈی؛ دھان کی نرسری۔",details_en:["Wheat: threshing/stacking.","Cotton: weeding + insect scouting.","Rice: nursery preparation; maize fodder sowing.","Heatwave: irrigate orchards to prevent stress."],details_ur:["گندم: گہائی اور بھوسہ گٹھڑی۔","کپاس: گوڈی اور کیڑے کی نگرانی۔","چاول: نرسری کی تیاری؛ چارہ مکئی کی کاشت۔","گرمی کی شدت: باغات کو مناسب پانی۔"]},
-  {title_en:"Harh — Mid Jun to Mid Jul",title_ur:"ہاڑ — جون 15 سے جولائی 15",summary_en:"Rice transplanting; cotton pest control; sugarcane earthing.",summary_ur:"دھان کی پنیری؛ کپاس میں کیڑے کا کنٹرول؛ گنے کی مٹی چڑھائی۔",details_en:["Rice: transplanting + first flood irrigation.","Cotton: monitor whitefly/bollworm; timely sprays.","Sugarcane: fertilizer + earthing up."],details_ur:["چاول: پنیری لگانا اور پہلا پانی۔","کپاس: وائٹ فلائی/بال ورم پر کنٹرول؛ بروقت اسپرے۔","گنا: کھاد اور مٹی چڑھائی۔"]},
-  {title_en:"Sawan — Mid Jul to Mid Aug",title_ur:"ساون — جولائی 16 سے اگست 16",summary_en:"Monsoon support; rice growth; cotton flower care.",summary_ur:"برسات؛ دھان کی بڑھوتری؛ کپاس میں پھول گرنے کا کنٹرول۔",details_en:["Monsoon: leverage rains; ensure drainage in low fields.","Rice: active tillering; maintain standing water carefully.","Cotton: manage flower drop; balanced nutrition.","Maize (summer): harvest; vegetables thrive."],details_ur:["مون سون سے فائدہ؛ نشیبی جگہوں میں نکاسی آب ضروری۔","چاول: بڑھوتری/ٹوئلرننگ؛ پانی کا مناسب لیول رکھیں۔","کپاس: پھول گرنے کی روک تھام؛ متوازن کھاد۔","گرمیوں کی مکئی کی برداشت؛ سبزیاں اچھی رہتی ہیں۔"]},
-  {title_en:"Bhadon — Mid Aug to Mid Sep",title_ur:"بھادوں — اگست 16 سے ستمبر 15",summary_en:"Rice booting; cotton bolls; fodder sowing (jantar).",summary_ur:"چاول بال آنا؛ کپاس میں بیل بننا؛ جنتر/گوار جیسے چارے کی بوائی۔",details_en:["Rice: booting/panicle; monitor pests/disease.","Cotton: boll formation; protect from late pests.","Fodder: sow jantar/cluster bean; late maize possible.","Early sugarcane for jaggery in some areas."],details_ur:["چاول: بال آنا؛ کیڑوں/بیماری پر نظر۔","کپاس: ڈوڈی بننا؛ دیرینہ کیڑوں سے تحفظ۔","چارے: جنتر/گوار کی کاشت؛ دیر سے مکئی ممکن۔","کچھ علاقوں میں گنے سے گڑ کی ابتدائی تیاری۔"]},
-  {title_en:"Assu — Mid Sep to Mid Oct",title_ur:"اسّو — ستمبر 15 سے اکتوبر 15",summary_en:"Rice harvest begin; cotton 1st picking; wheat land prep.",summary_ur:"چاول کی کٹائی شروع؛ کپاس کی پہلی چنائی؛ گندم کی زمین کی تیاری۔",details_en:["Rice: harvesting begins.","Cotton: first picking; keep fields clean.","Wheat: land prep; mustard sowing starts end of month."],details_ur:["چاول: کٹائی شروع۔","کپاس: پہلی چنائی؛ کھیت صاف رکھیں۔","گندم: زمین کی تیاری؛ آخر میں سرسوں کی کاشت۔"]},
-  {title_en:"Katak — Mid Oct to Mid Nov",title_ur:"کتک — اکتوبر 15 سے نومبر 15",summary_en:"Peak wheat sowing; cotton later pickings; sugarcane harvest.",summary_ur:"گندم کی بڑی کاشت؛ کپاس کی دوسری/تیسری چنائی؛ گنے کی برداشت شروع۔",details_en:["Wheat: sowing peak window.","Cotton: 2nd/3rd pickings as ready.","Sugarcane: harvesting season begins.","Gram/peas/linseed sowing."],details_ur:["گندم: کاشت کا بہترین وقت۔","کپاس: دوسری/تیسری چنائی۔","گنا: برداشت کا آغاز۔","چنا، مٹر، السی کی کاشت۔"]},
-  {title_en:"Maghar — Mid Nov to Mid Dec",title_ur:"مگھر — نومبر 15 سے دسمبر 14",summary_en:"Wheat in full swing; potato early digging; fog risk.",summary_ur:"گندم کی فصل رواں؛ آلو کی ابتدائی کھدائی؛ دھند و نزلہ زکام کا خدشہ۔",details_en:["Wheat: steady growth.","Potato: early crop digging; mustard flowering.","Gram sprouting; watch for frost/fog; cattle pneumonia risk."],details_ur:["گندم: متوازن بڑھوتری۔","آلو: ابتدائی فصل کی کھدائی؛ سرسوں میں پھول۔","چنے کی اگاؤ؛ کہر/دھند سے بچاؤ؛ مویشیوں کی نگہداشت۔"]},
-  {title_en:"Poh — Mid Dec to Mid Jan",title_ur:"پوہ — دسمبر 14 سے جنوری 13",summary_en:"Heavy fog; wheat tillering; potato main harvest.",summary_ur:"تیز دھند؛ گندم ٹیلرنگ؛ آلو کی مرکزی برداشت۔",details_en:["Fog season: limit sprays; protect workers/livestock.","Wheat: tillering; maintain moisture, avoid waterlogging.","Potato: major harvesting window; mustard pod formation."],details_ur:["دھند کا موسم: اسپرے محدود رکھیں؛ مزدور/مویشی کا تحفظ۔","گندم: ٹیلرنگ؛ نمی برقرار رکھیں، پانی کھڑا نہ ہونے دیں۔","آلو: بڑی برداشت؛ سرسوں میں پھلیاں بننا۔"]},
-  {title_en:"Magh — Mid Jan to Mid Feb",title_ur:"ما گھ — جنوری 13 سے فروری 12",summary_en:"Wheat 2nd irrigation; gram pods; mustard harvest begins.",summary_ur:"گندم کا دوسرا پانی؛ چنے میں پھلیاں؛ سرسوں کی کٹائی شروع۔",details_en:["Wheat: 2nd irrigation; manage weeds.","Gram: pod formation; protect from pod borer.","Mustard: harvest toward end; vegetables improve."],details_ur:["گندم: دوسرا پانی؛ جڑی بوٹیوں کا کنٹرول۔","چنا: پھلیاں؛ پھلی چھیدو سے بچاؤ۔","سرسوں: آخر میں کٹائی؛ سبزیوں کی حالت بہتر۔"]},
-  {title_en:"Phagun — Mid Feb to Mid Mar",title_ur:"فگن — فروری 12 سے مارچ 14",summary_en:"Wheat milk stage; mustard/potato harvest; sugarcane planting.",summary_ur:"گندم دودھیا دانہ؛ سرسوں/آلو کی برداشت؛ گنے کی کاشت۔",details_en:["Wheat: milk stage; avoid stress; timely irrigation.","Mustard: final harvest; potato late crop harvest.","Sugarcane: planting begins; deep ploughing for cotton."],details_ur:["گندم: دودھیا دانہ؛ تناؤ سے بچائیں؛ بروقت آبپاشی۔","سرسوں: آخری برداشت؛ آلو کی دیرینہ فصل کی برداشت۔","گنا: نئی کاشت شروع؛ کپاس کے لیے گہری جوت۔"]}
-];
-
-const content=document.getElementById("content");
-const datePicker=document.getElementById("datePicker");
-const todayBtn=document.getElementById("todayBtn");
-const hijriOffsetInput=document.getElementById("hijriOffset");
-const reminderDialog=document.getElementById("reminderDialog");
-const reminderDateEl=document.getElementById("reminderDate");
-const remTitle=document.getElementById("remTitle");
-const remNotes=document.getElementById("remNotes");
-const addReminderBtn=document.getElementById("addReminderBtn");
+// Theme fix: default light; .dark forces dark. No system override.
 const darkToggle=document.getElementById("darkToggle");
-
 (function initTheme(){
   const stored = localStorage.getItem("tri_theme");
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const startDark = stored ? (stored === 'dark') : prefersDark;
-  document.documentElement.classList.toggle('dark', startDark);
-  darkToggle.textContent = startDark ? '☀️' : '🌙';
+  const isDark = stored ? (stored === 'dark') : false;
+  document.documentElement.classList.toggle('dark', isDark);
+  darkToggle.textContent = isDark ? '☀️' : '🌙';
   darkToggle.addEventListener('click', ()=>{
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('tri_theme', isDark ? 'dark' : 'light');
-    darkToggle.textContent = isDark ? '☀️' : '🌙';
+    const nextDark = !document.documentElement.classList.contains('dark');
+    document.documentElement.classList.toggle('dark', nextDark);
+    localStorage.setItem('tri_theme', nextDark ? 'dark' : 'light');
+    darkToggle.textContent = nextDark ? '☀️' : '🌙';
   });
 })();
 
-function setBaseDate(d){ datePicker.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
-function getBaseDate(){ const val=datePicker.value; if(!val){ return new Date(); } const [y,m,d]=val.split("-").map(Number); return new Date(y,m-1,d); }
+function setBaseDate(d){ document.getElementById("datePicker").value = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}-${('0'+d.getDate()).slice(-2)}`; }
+function getBaseDate(){ const v=document.getElementById("datePicker").value; if(!v) return new Date(); const [y,m,d]=v.split('-').map(Number); return new Date(y,m-1,d); }
 function isToday(d){ const t=new Date(); return d.getFullYear()===t.getFullYear() && d.getMonth()===t.getMonth() && d.getDate()===t.getDate(); }
 
 const LS_KEY="tri_calendar_reminders_v1";
@@ -102,22 +76,61 @@ function specialEventsForDate(d, hijriOffset){
   return events;
 }
 
-function farmingSummaryHTML(idx){ const f=FARMING_DB[idx]; if(!f) return ""; return `<div class="card"><h3>Farming Guide — ${PUNJABI_MONTHS[idx]}</h3><div class="dual"><div class="en"><strong>${f.title_en}</strong> — ${f.summary_en}</div><div class="ur"><strong>${f.title_ur}</strong> — ${f.summary_ur}</div></div></div>`; }
-function farmingDetailsHTML(idx){ const f=FARMING_DB[idx]; if(!f) return ""; const listEn=f.details_en.map(it=>`<li>${it}</li>`).join(""); const listUr=f.details_ur.map(it=>`<li>${it}</li>`).join(""); return `<div class="card"><h3>Farming Guide — ${PUNJABI_MONTHS[idx]}</h3><div class="dual"><div class="en"><strong>${f.title_en}</strong></div><ul class="en">${listEn}</ul><div class="ur"><strong>${f.title_ur}</strong></div><ul class="ur">${listUr}</ul></div></div>`; }
+const content=document.getElementById("content");
+const todayBtn=document.getElementById("todayBtn");
+const hijriOffsetInput=document.getElementById("hijriOffset");
+const reminderDialog=document.getElementById("reminderDialog");
+const reminderDateEl=document.getElementById("reminderDate");
+const remTitle=document.getElementById("remTitle");
+const remNotes=document.getElementById("remNotes");
+const addReminderBtn=document.getElementById("addReminderBtn");
+
+function farmingDetailsHTML(idx){
+  const f=[
+    ["Wheat: final irrigation (last pani); heading begins.","Sugarcane (ratoon): cleaning + fertilizer.","Sunflower harvest; sow fodder (maize/elephant grass).","Start field prep for cotton."],
+    ["Wheat: harvesting & threshing begins.","Cotton: sowing; first irrigation; early weeding.","Maize (2nd season) possible; okra/bitter gourd planting.","Hot winds (loo): livestock care + orchard watering."],
+    ["Wheat: threshing/stacking.","Cotton: weeding + insect scouting.","Rice: nursery preparation; maize fodder sowing.","Heatwave: irrigate orchards."],
+    ["Rice: transplanting + first flood irrigation.","Cotton: monitor whitefly/bollworm; timely sprays.","Sugarcane: fertilizer + earthing up."],
+    ["Monsoon: ensure drainage.","Rice: tillering; maintain water carefully.","Cotton: control flower drop; balanced nutrition.","Summer maize harvest; vegetables thrive."],
+    ["Rice: booting; monitor pests/disease.","Cotton: boll formation; protect from late pests.","Fodder jantar/cluster bean sowing; late maize possible.","Early sugarcane for jaggery (some areas)."],
+    ["Rice: harvesting begins.","Cotton: first picking; clean fields.","Wheat: land prep; mustard sowing end of month."],
+    ["Wheat: peak sowing window.","Cotton: 2nd/3rd pickings.","Sugarcane: harvesting begins.","Gram/peas/linseed sowing."],
+    ["Wheat: steady growth.","Potato: early digging; mustard flowering.","Gram sprouting; watch frost/fog; cattle care."],
+    ["Fog season: limit sprays; protect workers/livestock.","Wheat: tillering; avoid waterlogging.","Potato: major harvest; mustard pods."],
+    ["Wheat: 2nd irrigation; manage weeds.","Gram: pod formation; protect from pod borer.","Mustard: harvest toward end; vegetables improve."],
+    ["Wheat: milk stage; timely irrigation.","Mustard/potato harvest; sugarcane planting.","Deep ploughing for cotton."]
+  ];
+  const ur=[
+    ["گندم: آخری پانی، بالی نکلنا شروع۔","گنا (پرانی فصل): صفائی اور کھاد۔","سورج مکھی کی برداشت؛ چارہ بوائی۔","کپاس کے لیے زمین کی تیاری۔"],
+    ["گندم: کٹائی و گہائی۔","کپاس: بوائی، پہلا پانی، ابتدائی گوڈی۔","مکئی دوسری فصل؛ بھنڈی/کریلا۔","لو: مویشی/باغات کی دیکھ بھال۔"],
+    ["گندم: گہائی و گٹھڑی۔","کپاس: گوڈی، کیڑوں کی نگرانی۔","چاول: نرسری؛ چارہ مکئی۔","گرمی میں باغات کو پانی۔"],
+    ["چاول: پنیری اور پہلا پانی۔","کپاس: وائٹ فلائی/بال ورم کنٹرول۔","گنا: کھاد اور مٹی چڑھائی۔"],
+    ["برسات؛ نکاسی آب یقینی۔","چاول: ٹیلرنگ؛ پانی کا دھیان۔","کپاس: پھول گرنے کی روک تھام۔","گرمیوں کی مکئی کی برداشت۔"],
+    ["چاول: بال آنا؛ کیڑے/بیماری پر نظر۔","کپاس: ڈوڈی بننا؛ دیرینہ کیڑے سے بچاؤ۔","جنتر/گوار چارہ بوائی؛ دیر سے مکئی ممکن۔","کچھ جگہ گڑ کی تیاری۔"],
+    ["چاول: کٹائی شروع۔","کپاس: پہلی چنائی؛ کھیت صاف۔","گندم: زمین کی تیاری؛ آخر میں سرسوں۔"],
+    ["گندم: بہترین کاشت وقت۔","کپاس: دوسری/تیسری چنائی۔","گنا: برداشت شروع۔","چنا، مٹر، السی بوائی۔"],
+    ["گندم: متوازن بڑھوتری۔","آلو: ابتدائی کھدائی؛ سرسوں میں پھول۔","چنے کی اگاؤ؛ کہر/دھند؛ مویشی خیال۔"],
+    ["دھند: اسپرے محدود؛ کارکن/مویشی حفاظت۔","گندم: ٹیلرنگ؛ پانی کھڑا نہ ہو۔","آلو: بڑی برداشت؛ سرسوں پھلیاں۔"],
+    ["گندم: دوسرا پانی؛ جڑی بوٹی کنٹرول۔","چنا: پھلیاں؛ پھلی چھیدو سے بچاؤ۔","سرسوں: آخر میں کٹائی؛ سبزیاں بہتر۔"],
+    ["گندم: دودھیا دانہ؛ بروقت آبپاشی۔","سرسوں/آلو کی برداشت؛ گنے کی کاشت۔","کپاس کے لیے گہری جوت۔"]
+  ];
+  const idx=punjabiInfoFromGregorian(getBaseDate()).idx;
+  return `<div class="card"><h3>Farming Guide</h3><div class="dual"><div class="en"><ul>${f[idx].map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="ur"><ul>${ur[idx].map(x=>`<li>${x}</li>`).join('')}</ul></div></div></div>`;
+}
 
 function renderDay(d){
   const hijri=hijriOf(d, hijriOffsetInput.value); const pun=punjabiInfoFromGregorian(d);
   const dateStr=ymd(d); const myRems=loadReminders()[dateStr]||[]; const autos=specialEventsForDate(d, hijriOffsetInput.value);
-  const allEvents=[...myRems.map(r=>({kind:"custom",name:r.title,notes:r.notes})), ...autos];
-  let eventsHtml = allEvents.length ? `<ul>`+allEvents.map((e,i)=>`<li><span class="badge">${e.kind}</span> ${e.name||""}${e.notes?` — <span class="muted">${e.notes}</span>`:""} ${e.kind==="custom"?`<button class="ghost small" data-del="${i}">Delete</button>`:""}</li>`).join("") + `</ul>` : `<p class="muted">No events.</p>`;
+  const all=[...myRems.map(r=>({kind:"custom",name:r.title,notes:r.notes})), ...autos];
+  let eventsHtml = all.length ? `<ul>`+all.map((e,i)=>`<li><span class="badge">${e.kind}</span> ${e.name||""}${e.notes?` — <span class="muted">${e.notes}</span>`:""} ${e.kind==="custom"?`<button class="ghost small" data-del="${i}">Delete</button>`:""}</li>`).join("") + `</ul>` : `<p class="muted">No events.</p>`;
   const hBadge=`<span class="badge">offset ${Number(hijriOffsetInput.value)}</span>`; const pBadge=`<span class="badge">${pun.daysInMonth}-day month</span>`;
-  content.innerHTML = `<div class="card"><h2>${fmtGregorian(d)} ${isToday(d)?'<span class="badge">today</span>':''}</h2><div class="rowline">English (Gregorian): <strong>${englishShort(d)}</strong></div><div class="rowline">Islamic (Hijri): <strong>${hijri.day} ${hijri.name} ${hijri.year}</strong> ${hBadge}</div><div class="rowline">Punjabi (Desi): <strong>${pun.day} ${pun.monthName} ${pun.year}</strong> ${pBadge}</div></div>` + farmingDetailsHTML(pun.idx) + `<div class="card"><h3>Events & Reminders</h3>${eventsHtml}</div>`;
-  content.querySelectorAll("[data-del]").forEach(btn=>btn.addEventListener("click",()=>{ const idx=Number(btn.dataset.del); const db=loadReminders(); const list=db[dateStr]||[]; if(idx>=0 && idx<list.length){ deleteReminder(dateStr, idx); render(); }}));
+  content.innerHTML = `<div class="card"><h2>${fmtGregorian(d)} ${isToday(d)?'<span class="badge">today</span>':''}</h2><div class="rowline">English: <strong>${englishShort(d)}</strong></div><div class="rowline">Islamic: <strong>${hijri.day} ${hijri.name} ${hijri.year}</strong> ${hBadge}</div><div class="rowline">Punjabi: <strong>${pun.day} ${pun.monthName} ${pun.year}</strong> ${pBadge}</div></div>` + farmingDetailsHTML(pun.idx) + `<div class="card"><h3>Events & Reminders</h3>${eventsHtml}</div>`;
+  content.querySelectorAll("[data-del]").forEach(btn=>btn.addEventListener("click",()=>{ const idx=Number(btn.dataset.del); deleteReminder(dateStr, idx); render(); }));
 }
 
 function renderWeek(d){
   const start=startOfWeek(d); const end=addDays(start,6); let html=`<div class="card"><h2>Week of ${englishShort(start)} → ${englishShort(end)}</h2>`;
-  for(let i=0;i<7;i++){ const cur=addDays(start,i); const hijri=hijriOf(cur, hijriOffsetInput.value); const pun=punjabiInfoFromGregorian(cur); const dateStr=ymd(cur); const myRems=loadReminders()[dateStr]||[]; const autos=specialEventsForDate(cur, hijriOffsetInput.value); const summaries=[...autos.map(e=>e.name), ...myRems.map(r=>`🔔 ${r.title}`)].slice(0,3).join(" • "); html += `<div class="card smallcard" data-goto="${dateStr}"><div><strong>${fmtGregorian(cur)}${isToday(cur)?' <span class="badge">today</span>':''}</strong></div><div class="rowline">I: ${hijri.day} ${hijri.name} ${hijri.year} · P: ${pun.day} ${pun.monthName} ${pun.year}</div><div class="rowline">${summaries || '<span class="muted">No events</span>'}</div></div>`; }
+  for(let i=0;i<7;i++){ const cur=addDays(start,i); const hijri=hijriOf(cur, hijriOffsetInput.value); const pun=punjabiInfoFromGregorian(cur); const dateStr=ymd(cur); const myRems=loadReminders()[dateStr]||[]; const autos=specialEventsForDate(cur, hijriOffsetInput.value); const summaries=[...autos.map(e=>e.name), ...myRems.map(r=>`🔔 ${r.title}`)].slice(0,3).join(" • "); html += `<div class="card smallcard" data-goto="${dateStr}"><div><strong>${fmtGregorian(cur)}${isToday(cur)?' <span class="badge">today</span>':''}</strong></div><div class="rowline">I: ${hijri.day} ${hijri.name} · P: ${pun.day} ${pun.monthName}</div><div class="rowline">${summaries || '<span class="muted">No events</span>'}</div></div>`; }
   html += `</div>`; content.innerHTML=html;
   content.querySelectorAll("[data-goto]").forEach(card=>card.addEventListener("click",()=>{ const [yy,mm,dd]=card.dataset.goto.split("-").map(Number); setBaseDate(new Date(yy,mm-1,dd)); document.querySelector('.segmented [data-view="day"]').click(); }));
 }
@@ -125,7 +138,7 @@ function renderWeek(d){
 function renderMonth(d){
   const y=d.getFullYear(), m=d.getMonth(); const first=new Date(y,m,1); const days=daysInMonth(y,m);
   const firstWeekStart=startOfWeek(first); const last=new Date(y,m,days); const lastWeekEnd=addDays(startOfWeek(last),6);
-  let cur=new Date(firstWeekStart); let html=`<div class="card"><div class="month-header"><h2>${first.toLocaleString(undefined,{month:"long"})} ${y}</h2><div class="nav-buttons"><button id="prevMonth">◀</button><button id="thisMonth">This month</button><button id="nextMonth">▶</button></div></div>${farmingSummaryHTML(punjabiInfoFromGregorian(first).idx)}<div class="calendar-grid"><div class="cell"><strong>Mon</strong></div><div class="cell"><strong>Tue</strong></div><div class="cell"><strong>Wed</strong></div><div class="cell"><strong>Thu</strong></div><div class="cell"><strong>Fri</strong></div><div class="cell"><strong>Sat</strong></div><div class="cell"><strong>Sun</strong></div>`;
+  let cur=new Date(firstWeekStart); let html=`<div class="card"><div class="month-header"><h2>${first.toLocaleString(undefined,{month:"long"})} ${y}</h2><div class="nav-buttons"><button id="prevMonth">◀</button><button id="thisMonth">This month</button><button id="nextMonth">▶</button></div></div><div class="calendar-grid"><div class="cell"><strong>Mon</strong></div><div class="cell"><strong>Tue</strong></div><div class="cell"><strong>Wed</strong></div><div class="cell"><strong>Thu</strong></div><div class="cell"><strong>Fri</strong></div><div class="cell"><strong>Sat</strong></div><div class="cell"><strong>Sun</strong></div>`;
   while(cur<=lastWeekEnd){ const inMonth=(cur.getMonth()===m); const hijri=hijriOf(cur, hijriOffsetInput.value); const pun=punjabiInfoFromGregorian(cur); const dateStr=ymd(cur); const myRems=loadReminders()[dateStr]||[]; const autos=specialEventsForDate(cur, hijriOffsetInput.value); const hasEvent=(myRems.length+autos.length)>0; html += `<div class="cell ${isToday(cur)?'today':''}" data-goto="${dateStr}" style="opacity:${inMonth?1:0.45}"><div class="gdate"><span>${cur.getDate()}</span>${hasEvent?'<span class="badge">•</span>':''}</div><div class="sub">I: ${hijri.day} ${hijri.name.slice(0,3)}</div><div class="sub">P: ${pun.day} ${pun.monthName.slice(0,3)}</div></div>`; cur=addDays(cur,1); }
   html += `</div></div>`; content.innerHTML=html;
   document.getElementById("prevMonth").onclick=()=>{ const base=getBaseDate(); base.setMonth(base.getMonth()-1); setBaseDate(base); render(); };
@@ -144,7 +157,7 @@ function render(){ const d=getBaseDate(); const active=document.querySelector(".
 
 (function init(){
   const now=new Date(); setBaseDate(now); render();
-  datePicker.addEventListener("change", render);
+  document.getElementById("datePicker").addEventListener("change", render);
   todayBtn.addEventListener("click", ()=>{ setBaseDate(new Date()); render(); });
   hijriOffsetInput.addEventListener("change", render);
   document.getElementById("punjabiSystem").addEventListener("change", render);

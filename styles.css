@@ -64,6 +64,4 @@ dialog input, dialog textarea { width:100%; padding:8px; border:1px solid var(--
 .ur { direction: rtl; font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif; font-size: 14px; }
 .en { font-size: 14px; }
 
-@media (prefers-color-scheme: dark) {
-  :root { --fg:#eaeaea; --muted:#a9b0bb; --bg:#0e1116; --card:#161b22; --acc:#5b8cff; --border:#2a2f37; }
-} 
+/* No media query to override user theme. */

@@ -1,4 +1,4 @@
-const VERSION = 'tri-cal-v3-fix';
+const VERSION = 'tri-cal-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -7,10 +7,10 @@ const ASSETS = [
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/apple-touch-icon-180.png',
-  './icons/apple-touch-icon-167.png',
+  './icons/apple-touch-icon-120.png',
   './icons/apple-touch-icon-152.png',
-  './icons/apple-touch-icon-120.png'
+  './icons/apple-touch-icon-167.png',
+  './icons/apple-touch-icon-180.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -21,7 +21,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(keys.map(k => (k !== VERSION ? caches.delete(k) : null))))
-    .then(() => self.clients.claim())
+      .then(() => self.clients.claim())
   );
 });
 
@@ -48,7 +48,5 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'PING') {
-    // no-op
-  }
+  if (event.data && event.data.type === 'PING') {}
 });
