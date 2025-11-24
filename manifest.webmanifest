@@ -1,9 +1,7 @@
 {
   "name": "3-in-1 Calendar",
   "short_name": "Tri Calendar",
-  "description": "English \u00b7 Islamic \u00b7 Punjabi (\u067e\u0646\u062c\u0627\u0628\u06cc \u00b7 Desi) calendar with holiday packs, reminders, offline PWA, hybrid daily Islamic quotes, and styled daily view.",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0b5fff",
@@ -11,16 +9,6 @@
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/apple-touch-icon-180.png",
-      "sizes": "180x180",
       "type": "image/png"
     }
   ]
