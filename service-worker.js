@@ -1,10 +1,11 @@
-const VERSION='tri-cal-v8';
+const VERSION='tri-cal-v9';
 const ASSETS=[
   './',
   './index.html',
   './styles.css',
   './app.js',
   './manifest.webmanifest',
+  './data/quotes-local.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon-180.png'
@@ -27,4 +28,3 @@ self.addEventListener('fetch',e=>{
     })
   );
 });
-self.addEventListener('message',e=>{});
