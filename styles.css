@@ -1,12 +1,18 @@
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,'Noto Nastaliq Urdu',sans-serif}
+:root{--bg:#fff;--fg:#111;--accent:#0b5fff;--card:#f7f8fb;--muted:#667085;--border:#E5E7EB}
+:root[data-theme=dark]{--bg:#0f1116;--fg:#eaeaea;--accent:#5b8cff;--card:#161b22;--muted:#a9b0bb;--border:#2a313d}
+:root[data-theme=modern]{--bg:#0b1220;--fg:#e9f1ff;--accent:#6ea8ff;--card:#111827;--muted:#a7b4c7;--border:#1f2937}
+:root[data-theme=islamic]{--bg:#0f1a14;--fg:#e8fff4;--accent:#1fa97a;--card:#122019;--muted:#9ad7bf;--border:#1c2c24}
+
 body{background:var(--bg);color:var(--fg)}
-:root{--bg:#fff;--fg:#111;--accent:#0b5fff;--card:#f8f9fb;--muted:#666}
-:root[data-theme=dark]{--bg:#0f1116;--fg:#eaeaea;--accent:#5b8cff;--card:#161b22;--muted:#a9b0bb}
-.topbar{display:flex;justify-content:space-between;align-items:center;background:var(--accent);color:#fff;padding:10px 16px;flex-wrap:wrap}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--accent);color:#fff;flex-wrap:wrap}
 .topbar h1{margin:0;font-size:22px}
-.controls{background:#f3f4f6;padding:10px 16px;border-bottom:1px solid #ccc}
-.card{background:var(--card);border-radius:12px;padding:14px;margin:16px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
-.legend{display:flex;gap:10px;margin:10px 16px;color:var(--muted);flex-wrap:wrap}
-.weather{margin:12px;padding:10px;background:var(--card);border-left:4px solid var(--accent);border-radius:8px}
-@media(max-width:600px){.topbar h1{font-size:18px}.card{margin:8px;padding:10px}}
+.topbar p{margin:0;opacity:.9}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:rgba(0,0,0,.03);border-bottom:1px solid var(--border)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin:16px}
+.section-title{margin:16px;color:var(--muted);font-weight:600}
+.legend{display:flex;gap:12px;margin:10px 16px;color:var(--muted);flex-wrap:wrap}
+.weather{margin:16px;padding:12px;border-left:4px solid var(--accent);background:var(--card);border-radius:8px}
+.muted{color:var(--muted);margin:10px 16px}
+@media(max-width:640px){.topbar h1{font-size:18px}.card{margin:10px;padding:12px}}

@@ -2,66 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>3-in-1 Calendar — English · Islamic · Punjabi (پنجابی · Desi)</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="manifest" href="manifest.webmanifest" />
   <script defer src="app.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <div class="title">
-      <h1>3-in-1 Calendar</h1>
-      <p>English · Islamic (Hijri) · Punjabi (پنجابی · Desi)</p>
-    </div>
-    <div>
-      <select id="themePalette" title="Theme">
-        <option value="system">System</option>
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-        <option value="modern">Modern</option>
-        <option value="islamic">Islamic</option>
-      </select>
-    </div>
-  </header>
+<header class="topbar">
+  <div class="title">
+    <h1>3-in-1 Calendar</h1>
+    <p>English · Islamic (Hijri) · Punjabi (پنجابی · Desi)</p>
+  </div>
+  <div class="actions">
+    <select id="themePalette" title="Theme">
+      <option value="system">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="modern">Modern</option>
+      <option value="islamic">Islamic</option>
+    </select>
+  </div>
+</header>
 
-  <section class="controls">
-    <div class="row">
-      <label for="datePicker">Base date:</label>
-      <input type="date" id="datePicker" />
-      <button id="todayBtn">Today</button>
-      <button id="addReminderBtn">＋ Reminder</button>
-      <button id="exportBtn">Export</button>
-      <label class="importBtn">
-        Import <input type="file" id="importFile" hidden accept="application/json">
-      </label>
-    </div>
-  </section>
+<section class="controls">
+  <label>Base date:</label>
+  <input type="date" id="datePicker" />
+  <button id="todayBtn">Today</button>
+  <button id="addReminderBtn">＋ Reminder</button>
+  <button id="exportBtn">Export</button>
+  <label class="importBtn">Import<input type="file" id="importFile" accept="application/json" hidden></label>
+</section>
 
-  <main id="content"></main>
+<main id="content"></main>
 
-  <footer>
-    <div class="legend">
-      <span>English</span><span class="islamic">Islamic</span><span class="punjabi">Punjabi (پنجابی)</span><span class="custom">My reminder</span>
-    </div>
-    <p class="muted">Islamic uses tabular Hijri (civil). Punjabi months use fixed solar boundaries. Local dates may differ by ±1 day.</p>
-  </footer>
+<footer>
+  <div class="legend">
+    <span>English</span>
+    <span class="islamic">Islamic</span>
+    <span class="punjabi">Punjabi (پنجابی)</span>
+    <span class="custom">My reminder</span>
+  </div>
+  <p class="muted">
+    Islamic uses tabular Hijri (civil). Punjabi months use fixed solar boundaries (Desi). Local observance can differ by ±1 day.
+  </p>
+</footer>
 
-  <dialog id="reminderDialog">
-    <form method="dialog" id="reminderForm">
-      <h3>Add / Edit Reminder</h3>
-      <p id="reminderDate"></p>
-      <label>Title
-        <input type="text" id="remTitle" required />
-      </label>
-      <label>Notes
-        <textarea id="remNotes" rows="3"></textarea>
-      </label>
-      <menu>
-        <button value="cancel">Cancel</button>
-        <button id="saveReminder" value="default">Save</button>
-      </menu>
-    </form>
-  </dialog>
+<dialog id="reminderDialog">
+  <form id="reminderForm" method="dialog">
+    <h3>Add / Edit Reminder</h3>
+    <p id="reminderDate"></p>
+    <label>Title
+      <input id="remTitle" required />
+    </label>
+    <label>Notes
+      <textarea id="remNotes" rows="3"></textarea>
+    </label>
+    <menu>
+      <button value="cancel">Cancel</button>
+      <button id="saveReminder" value="default">Save</button>
+    </menu>
+  </form>
+</dialog>
 </body>
 </html>
